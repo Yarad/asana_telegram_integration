@@ -1,0 +1,15 @@
+{
+    "name": "yarad/asana_telegram_integration",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Yarad",
+            "email": "saigopr@yandex.ru"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "asana/asana": "^0.8.0",
+        "longman/telegram-bot": "*"
+    }
+}
