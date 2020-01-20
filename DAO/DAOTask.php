@@ -26,4 +26,11 @@ class DAOTask extends DAO
         $ret = $stmt->execute();
         return $ret;
     }
+
+    public function deleteTaskByAsanaID($taskAsanaID)
+    {
+        $stmt = cDB::getInstance()->prepare('DELETE FROM `task` WHERE `ID_in_asana` = ?');
+        $stmt->bindValue(1, $taskAsanaID);
+        return $stmt->execute();
+    }
 }

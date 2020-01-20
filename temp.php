@@ -4,10 +4,12 @@ include_once __DIR__ . '/php_classes/Constants.php';
 include_once __DIR__ . '/DAO/DAOUser.php';
 include_once __DIR__ . '/DAO/DAOTask.php';
 
+$ret = DAOTask::getInstance()->deleteTaskByAsanaID('1157682065001988');
+
 $client = Asana\Client::accessToken(Constants::get('ASANA_API'), ['headers' => ['asana-disable' => 'string_ids']]);
-try{
-    $task = $client->tasks->findById('1157682065001980');
-}catch (Exception $exception){
+try {
+    $task = $client->tasks->findById('1157331118523004');
+} catch (Exception $exception) {
     return;
 }
 

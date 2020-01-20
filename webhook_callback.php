@@ -25,19 +25,28 @@ foreach ($events as $event) {
         continue;
     }
 
-    if (!$event['resource']['gid']) {
+    if ($event['resource']['gid']) {
+        $taskID = $event['resource']['gid'];
+    } else {
+        continue;
+    }
+
+    if ($event['action'] === 'deleted') {
+        DAOTask::getInstance()->deleteTaskByAsanaID($taskID);
         continue;
     }
 
     try {
-        $task = $client->tasks->findById($event['resource']['gid']);
+        $task = $client->tasks->findById($taskID);
     } catch (Exception $exception) {
-        if($exception->status == 404){
-            //TODO: delete task
+
+        if ($exception->status == 404) {
+            DAOTask::getInstance()->deleteTaskByAsanaID($taskID);
         }
         continue;
     }
 
+    //>>>changed|added
     //отправляем только владельцу
     if (!$task->assignee) {
         continue;
