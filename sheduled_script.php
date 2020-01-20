@@ -1,12 +1,32 @@
 <?php
-require_once __DIR__ . '/vendor/autoload.php';
-require_once __DIR__ . '/php_classes/Constants.php';
 
-$client = Asana\Client::accessToken('', ['headers' => ['asana-disable' => 'string_ids']]);
-$workspaces = $client->workspaces->findAll();
-foreach ($workspaces as $workspace) {
-    $events = $client->events->getNext(['resource' => $workspace->gid]);
-    foreach ($events as $value) {
-        var_dump($value);
+use Longman\TelegramBot\Request;
+
+include_once __DIR__ . '/vendor/autoload.php';
+include_once __DIR__ . '/php_classes/Constants.php';
+include_once __DIR__ . '/DAO/DAOTask.php';
+
+//$client = Asana\Client::accessToken('', ['headers' => ['asana-disable' => 'string_ids']]);
+
+$tasksPDO = DAOTask::getInstance()->getTasksToNotifyAbout();
+if ($tasksPDO) {
+    $telegram = new Longman\TelegramBot\Telegram(Constants::get('TELEGRAM_BOT_API'), 'ASANA');
+
+    while ($task = $tasksPDO->fetchObject()) {
+        try {
+            $response = Request::sendMessage(
+                [
+                    'chat_id' => $task->ID_telegram,
+                    'text' => 'NOTIFY',
+                    'timeout' => null,
+                ]
+            );
+            if ($response->isOk()) {
+                $task->sent = 1;
+                DAOTask::getInstance()->setTask($task);
+            }
+        } catch (\Longman\TelegramBot\Exception\TelegramException $e) {
+            continue;
+        }
     }
 }
